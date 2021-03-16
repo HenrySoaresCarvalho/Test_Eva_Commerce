@@ -4,14 +4,16 @@ const jwt = require('jsonwebtoken')
 const ACCESS_TOKEN_SECRET = 'cf1ee8d115083b3463e667029ec7f67c5d9b0b0a58f3e2beda1f2bec60fe42a05f8658e64bcb1d18274b7d224ffd649f3151f518ad4d5757445f8e36efbd48c8'
 
 module.exports = {
-    test(req,res){
-        return res.json({
-            name: req.name
-        })
-    },
     async store(req,res){
+
+        const { name, email, password } = req.body
+
+        if((!name) || (!email) || (!password)) return res.json({
+            message: "Missining data"
+        })
         try{
-            const { name, email, password } = req.body
+
+
             const hashed_password = await bcrypt.hash(password,10)
             const user = await User.create({
                 name,
@@ -26,42 +28,55 @@ module.exports = {
             },201)
         }catch{
             return res.send({
-                message: "Failed"
+                message: "Email Already Exists"
             })
         }
  
     },
     async user_login(req,res){
-        const {email,password} = req.body
-        
-        const user = await User.findOne({
-            where:{
-                email
-            }
+        const { email, password } = req.body
+    
+        if((!email) || (!password)) return res.json({
+            message: "Missining data"
         })
-        const hashed_password = user.dataValues.password
-
-        const comparator = await bcrypt.compare(password,hashed_password)
-        if(comparator){
-            const user_auth = {
-                user_id: user.dataValues.id,
-                username:user.dataValues.name,
-                
-            }
-            const accessToken = jwt.sign(user_auth,ACCESS_TOKEN_SECRET)
-            return res.json({
-                message: "Logged in",
-                accessToken
+        try{
+            const user = await User.findOne({
+                where:{
+                    email
+                }
             })
-        }else{
+            const hashed_password = user.dataValues.password
+    
+            const comparator = await bcrypt.compare(password,hashed_password)
+            if(comparator){
+                const user_auth = {
+                    user_id: user.dataValues.id,
+                    username:user.dataValues.name,
+                    
+                }
+                const accessToken = jwt.sign(user_auth,ACCESS_TOKEN_SECRET)
+                return res.json({
+                    message: "Logged in",
+                    accessToken
+                })
+            }else{
+                return res.json({
+                    message:"Wrong values"
+                })
+            }
+        }catch{
             return res.json({
-                message:"Failed"
+                message:"Wrong values"
             })
         }
+        
 
     },
     authenticator(req,res,next){
         const auth_header = req.headers['authorization']
+        if(!auth_header) return res.json({
+            message: "Authentication Header is required"
+        })
         const token = auth_header && auth_header.split(" ")[1]
 
         if(token == null){
