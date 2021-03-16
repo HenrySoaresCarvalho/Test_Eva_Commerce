@@ -4,6 +4,33 @@ const jwt = require('jsonwebtoken')
 const ACCESS_TOKEN_SECRET = 'cf1ee8d115083b3463e667029ec7f67c5d9b0b0a58f3e2beda1f2bec60fe42a05f8658e64bcb1d18274b7d224ffd649f3151f518ad4d5757445f8e36efbd48c8'
 
 module.exports = {
+    async get_all_users(req,res){
+        const users = await User.findAll()
+        
+        let formated_users = []
+
+        users.forEach(element => {
+            const value = {
+                id: element.id,
+                name: element.name,
+                email: element.email
+            }
+            formated_users.push(value)
+        });
+
+        return res.json(formated_users)
+
+    },
+    async get_user(req,res){
+        const { id } = req.params
+        
+        const user = await User.findByPk(id)
+        const user_template = {
+            name: user.name,
+            email: user.email
+        }
+        return res.json(user_template)
+    },
     async store(req,res){
 
         const { name, email, password } = req.body
