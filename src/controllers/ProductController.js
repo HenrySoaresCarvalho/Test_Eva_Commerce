@@ -6,6 +6,7 @@ module.exports ={
     },
     async get_product_by_id(req,res){
         const {id} = req.params
+
         const product = await Product.findByPk(id)
        
         return res.json(product)
@@ -13,17 +14,29 @@ module.exports ={
     },
     async remove_product(req,res){
         const {id} = req.params
-        const remover = await Product.destroy({
-            where:{
-                id
-            }
-        })
-        return res.json({
-            message:"Removed"
-        })
+        try{
+            const remover = await Product.destroy({
+                where:{
+                    id
+                }
+            })
+            return res.json({
+                message:"Removed"
+            })
+        }catch{
+            return res.json({
+                message:"Invalid id"
+            })
+        }
+        
     },
     async store(req,res){
         const { name, description, price, image1, image2, image3 } = req.body
+
+        if(!name || !description || !price || !image1 || !image2 || !image3) return res.json({
+            message:"Missining values"
+        })
+
         const {user_id} = req.name
         const new_product = {
             name,
