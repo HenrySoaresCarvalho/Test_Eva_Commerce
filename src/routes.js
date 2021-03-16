@@ -6,6 +6,8 @@ const routes = express.Router()
 
 routes.post("/user/register",UserController.store)
 routes.post("/user/login",UserController.user_login)
+routes.get("/user/:id",UserController.get_user)
+routes.get("/user",UserController.get_all_users)
 
 routes.post("/product/register",UserController.authenticator,ProductController.store)
 routes.get("/product",ProductController.get_all_products)
