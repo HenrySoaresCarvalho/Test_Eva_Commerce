@@ -11,6 +11,17 @@ module.exports ={
         return res.json(product)
 
     },
+    async remove_product(req,res){
+        const {id} = req.params
+        const remover = await Product.destroy({
+            where:{
+                id
+            }
+        })
+        return res.json({
+            message:"Removed"
+        })
+    },
     async store(req,res){
         const { name, description, price, image1, image2, image3 } = req.body
         const {user_id} = req.name
