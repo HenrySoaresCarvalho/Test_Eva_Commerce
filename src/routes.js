@@ -10,8 +10,8 @@ routes.get("/user/:id",UserController.get_user)
 routes.get("/user",UserController.get_all_users)
 
 routes.post("/product/register",UserController.authenticator,ProductController.store)
-routes.get("/product",ProductController.get_all_products)
-routes.get("/product/:id",ProductController.get_product_by_id)
+routes.get("/product",UserController.authenticator,ProductController.get_all_products)
+routes.get("/product/:id",UserController.authenticator,ProductController.get_product_by_id)
 routes.delete("/product/:id",UserController.authenticator,ProductController.remove_product)
 
 module.exports = routes
