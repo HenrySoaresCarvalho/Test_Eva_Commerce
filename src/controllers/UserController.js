@@ -44,7 +44,9 @@ module.exports = {
         const comparator = await bcrypt.compare(password,hashed_password)
         if(comparator){
             const user_auth = {
-                username:user.dataValues.name
+                user_id: user.dataValues.id,
+                username:user.dataValues.name,
+                
             }
             const accessToken = jwt.sign(user_auth,ACCESS_TOKEN_SECRET)
             return res.json({
@@ -68,11 +70,12 @@ module.exports = {
             },401)
         }
 
-        jwt.verify(token,ACCESS_TOKEN_SECRET,(err,user)=>{
+        jwt.verify(token,ACCESS_TOKEN_SECRET,(err,user,id)=>{
             if(err) return res.send({
                 message:"Invalid token"
             },401)
             req.name = user
+            req.id = id
             next()
         })
             
